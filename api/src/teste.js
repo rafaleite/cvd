@@ -1,23 +1,64 @@
 const mongoose = require('mongoose')
 const Categoria = require('./categoria/categoria.model')
+const Projeto = require('./projeto/projeto.model')
+
 mongoose.connect('mongodb://localhost/teste')
+
+const findCategoria = async (objectId) => {
+    try {
+        const id = new mongoose.mongo.ObjectID(objectId)
+        const categoria = await Categoria.findById(id)
+        console.log(categoria)
+        return categoria
+    } catch (err) {
+        console.log(err)
+        return ''
+    }
+}
 
 const postCategoria = async (jsonCategoria) => {
     try {
-        let categoria = await Categoria.findOne({nome: jsonCategoria.nome})
+        let categoria = await Categoria.findOne({ nome: jsonCategoria.nome })
         console.log(categoria)
-        if(categoria !== null) {
+        if (categoria !== null) {
             console.log('Categoria já cadastrada')
-            return ""
-        }else {
-            categoria = new Categoria(jsonCategoria)
+            return ''
         }
-
+        categoria = new Categoria(jsonCategoria)
         const newCat = await categoria.save()
         console.log(newCat)
-    }catch(err) {
+        return newCat
+    } catch (err) {
+        console.log(err)
+        return ''
+    }
+}
+
+const novoProjeto = async (projeto) => {
+    try {
+        /* const categoria = await findCategoria(projeto.categoria)
+        if (categoria === null) {
+            console.log('Categoria não localizada')
+            return ''
+        } */
+        const novoProjeto = new Projeto(projeto)
+        novoProjeto.versoes.push(novoProjeto.versaoAtual)
+        // novoProjeto.categoria = categoria
+
+        const objetoSalvo = await novoProjeto.save()
+        console.log(objetoSalvo)
+    } catch (err) {
         console.log(err)
     }
 }
 
-postCategoria({nome: 'Projeto FRETE'})
+// postCategoria({ nome: 'Projeto FRETE' })
+// findCategoria('5a693d6343342e137d81a429').then(obj => findCategoria(obj._id))
+
+const newProject = {
+    nome: 'RMIAutorizador2',
+    versaoAtual: '0010101',
+    categoria: '5a693d6343342e137d81a429',
+}
+
+novoProjeto(newProject)

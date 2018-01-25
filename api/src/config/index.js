@@ -1,7 +1,7 @@
-const serverConfig = require('./server')();
-const databaseConfig = require('./database')();
+const serverConfig = require('./server')()
+const databaseConfig = require('./database')()
 
 module.exports = {
-  server: serverConfig,
-  database: databaseConfig,
-};
+    server: serverConfig,
+    database: databaseConfig,
+}

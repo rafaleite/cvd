@@ -1,25 +1,25 @@
 module.exports = () => {
-// Default to dev presets
-const dbConfig = {
-    url: 'mongodb://localhost:27017/dev',
-    opts: {
-    autoReconnect: true,
-    keepAlive: 300000,
-    },
-};
+    const dbConfig = {
+        url: 'mongodb://localhost:27017/cvd-dev',
+        opts: {
+            autoReconnect: true,
+            keepAlive: 300000,
+        },
+    }
 
-switch (process.env.NODE_ENV) {
+    switch (process.env.NODE_ENV) {
     case 'production':
-    break;
+        Object.assign(dbConfig, { url: 'mongodb://localhost:27017/cvd' })
+        break
     case 'stage':
-    break;
+        break
     case 'test':
-    Object.assign(dbConfig, { url: 'mongodb://localhost:27017/test' });
-    break;
+        Object.assign(dbConfig, { url: 'mongodb://localhost:27017/cvd-test' })
+        break
     case 'dev':
     default:
-    break;
-}
+        break
+    }
 
-return dbConfig;
-};
+    return dbConfig
+}
