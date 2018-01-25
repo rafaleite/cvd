@@ -11,6 +11,7 @@ const ProjetoSchema = new Schema({
         projeto: { type: Schema.ObjectId, ref: 'Projeto' },
         versao: String,
     }],
+    isPublicado: { type: Boolean, default: false },
 })
 
 const ProjetoModel = mongoose.model('Projeto', ProjetoSchema)
