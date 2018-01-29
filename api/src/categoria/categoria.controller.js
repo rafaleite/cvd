@@ -1,7 +1,7 @@
 const Categoria = require('./categoria.model')
 const Projeto = require('../projeto/projeto.model')
+const categoriaBusiness = require('./categoria.business')
 const mongoose = require('mongoose')
-const querystring = require('query-string')
 const ERRORS = require('../constants').ERRORS
 
 /**
@@ -10,10 +10,8 @@ const ERRORS = require('../constants').ERRORS
  */
 exports.getCategorias = async (ctx, next) => {
     try {
-        const categorias = await Categoria.find({})
-        const categoriasDTO = categorias.map(cat => montaCategoriaDTO(cat))
         ctx.status = 200
-        ctx.body = { categorias: categoriasDTO }
+        ctx.body = { categorias: await categoriaBusiness.findCategorias({}, true) }
         await next()
     } catch (err) {
         ctx.throw(500, err)
@@ -26,11 +24,7 @@ exports.getCategorias = async (ctx, next) => {
  */
 exports.getCategoria = async (ctx, next) => {
     try {
-        const _id = new mongoose.mongo.ObjectID(ctx.params.id)
-        const categoria = await Categoria.findById(_id)
-        const categoriaDTO = montaCategoriaDTO(categoria)
-        
-        ctx.body = categoriaDTO
+        ctx.body = await categoriaBusiness.findCategoriaById(ctx.params.id, true)
         ctx.status = 200
         await next()
     } catch (err) {
@@ -47,9 +41,9 @@ exports.newCategoria = async (ctx, next) => {
             return await next()
         }
         categoria = new Categoria({ nome: ctx.request.body.nome })
-        categoria = await categoria.save() 
-        ctx.body = montaCategoriaDTO(categoria)
-        await next()
+        categoria = await categoria.save()
+        ctx.body = categoriaBusiness.montarCategoriaDTO(categoria)
+        return await next()
     } catch (err) {
         ctx.throw(500, err)
     }
@@ -61,17 +55,17 @@ exports.newCategoria = async (ctx, next) => {
 exports.editCategoria = async (ctx, next) => {
     try {
         const _id = new mongoose.mongo.ObjectID(ctx.params.id)
-        const categoriaExist = await Categoria.findOne({ nome: ctx.request.body.nome, _id: {$ne: _id} })
-        if(categoriaExist !== null) {
+        const categoriaExist = await Categoria.findOne({ nome: ctx.request.body.nome, _id: { $ne: _id } })
+        if (categoriaExist !== null) {
             ctx.status = 422
             ctx.body = { error: ERRORS.CATEGORIA_EXISTE }
             return await next()
         }
 
-        await Categoria.findOneAndUpdate({ _id: ctx.params.id }, { nome: ctx.request.body.nome });
+        await Categoria.findOneAndUpdate({ _id: ctx.params.id }, { nome: ctx.request.body.nome })
         ctx.status = 200
         ctx.body = { msg: 'Categoria alterada com sucesso', status: 200 }
-        await next();
+        return await next()
     } catch (err) {
         ctx.throw(500, err)
     }
@@ -83,26 +77,18 @@ exports.editCategoria = async (ctx, next) => {
 exports.deleteCategoria = async (ctx, next) => {
     try {
         const _id = new mongoose.mongo.ObjectID(ctx.params.id)
-        const projetos = await Projeto.find({ categoria : _id })
-        
-        if(projetos !== null && projetos.length > 0) {
+        const projetos = await Projeto.find({ categoria: _id })
+        if (projetos !== null && projetos.length > 0) {
             ctx.status = 400
             ctx.body = { error: 'Existem projetos vinculados a categoria', status: 400 }
             return await next()
         }
 
-        await Categoria.findOneAndRemove({ _id: ctx.params.id });
+        await Categoria.findOneAndRemove({ _id: ctx.params.id })
         ctx.status = 200
         ctx.body = { msg: 'Categoria apagada com sucesso!', status: 200 }
         await next()
     } catch (err) {
         ctx.throw(500, err)
     }
-}
-
-montaCategoriaDTO = (categoria) => {
-    if(categoria === null || categoria === undefined) {
-        return {}
-    }
-    return { id: categoria._id, nome: categoria.nome }
 }

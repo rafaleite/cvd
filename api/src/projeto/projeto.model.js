@@ -15,6 +15,7 @@ const ProjetoSchema = new Schema({
 })
 
 const ProjetoModel = mongoose.model('Projeto', ProjetoSchema)
+
 ProjetoSchema.plugin(idValidator, { message: '{PATH} não localizado' })
 
 module.exports = ProjetoModel

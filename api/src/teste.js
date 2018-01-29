@@ -88,13 +88,24 @@ const addVersao = async (req) => {
     }
 }
 
+const findProjeto = async (objectId) => {
+    try {
+        const id = new mongoose.mongo.ObjectID(objectId)
+        const projeto = await Projeto.find({}).populate('categoria')
+        console.log(projeto)
+        return projeto
+    } catch (err) {
+        console.log(err)
+        return ''
+    }
+}
+
 // postCategoria({ nome: 'Projeto FRETE' })
 // findCategoria('5a693d6343342e137d81a429').then(obj => findCategoria(obj._id))
-findCategorias({nome: 'Projeto Benefício'}, { page: 1, limit: 1 })
+// findCategorias({nome: 'Projeto Benefício'}, { page: 1, limit: 1 })
 const newProject = {
     nome: 'RMIAutorizador2',
     versaoAtual: '0010101',
-    categoria: '5a693d6343342e137d81a429',
+    categoria: '5a6ab624f8ac801dda94a6d4',
 }
-
-// novoProjeto(newProject)
+findProjeto('5a694db7d508a51704b2988e')
