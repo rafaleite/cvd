@@ -28,7 +28,6 @@ const findCategoriaById = async (id, isDTOFormat) => {
 
 const findCategorias = async (query, isDTOFormat) => {
     try {
-        
         const categorias = await Categoria.find(query)
         console.log(categorias)
         if (isDTOFormat) {

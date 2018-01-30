@@ -20,3 +20,45 @@ const montarProjetoDTO = (projeto) => {
 
     return dto
 }
+
+const findProjetoById = async (id) => {
+    try {
+        const _id = new mongoose.mongo.ObjectID(id)
+        return await Projeto.findById(_id).populate('categoria').populate('dependencias.projeto')
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+const findProjeto = async (query) => {
+    try {
+        const projetos = await Projeto.find(query).populate('categoria').populate('dependencias.projeto')
+        return projetos
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+const newProjeto = async (projeto) => {
+    try {
+        const categoria = await findCategoria(projeto.categoria)
+        if (categoria === null) {
+            console.log('Categoria não localizada')
+            return ''
+        }
+        const novoProjeto = new Projeto(projeto)
+        novoProjeto.versoes.push(novoProjeto.versaoAtual)
+        novoProjeto.categoria = categoria
+
+        const objetoSalvo = await novoProjeto.save()
+        console.log(objetoSalvo)
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+
+module.exports = { montarProjetoDTO, findProjetoById, findProjeto }
