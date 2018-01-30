@@ -88,11 +88,35 @@ const addVersao = async (req) => {
     }
 }
 
+const addDependencia = async (request) => {
+    const projeto = await Projeto.findById(request.id)
+    if (projeto === null) {
+        console.log('Projeto não localizado')
+        return null
+    }
+
+    const dependencia = await Projeto.findById(request.dependencia.id)
+    if (dependencia === null) {
+        console.log('Dependencia não localizada')
+        return null
+    }
+
+    if (!dependencia.versoes.includes(request.dependencia.versao)) {
+        console.log('A versão da dependencia não existe')
+        return null
+    }
+
+    projeto.dependencias.push({ projeto: dependencia._id, versao: request.dependencia.versao })
+    console.log(projeto)
+    await projeto.save()
+    return { status: 200, msg: 'Dependencia incluída com sucesso' }
+}
+
 const findProjeto = async (objectId) => {
     try {
         const id = new mongoose.mongo.ObjectID(objectId)
-        const projeto = await Projeto.find({}).populate('categoria')
-        console.log(projeto)
+        const projeto = await Projeto.findById(id).populate('categoria').populate('dependencias.projeto')
+        console.log(projeto.dependencias[0].projeto)
         return projeto
     } catch (err) {
         console.log(err)
@@ -104,8 +128,17 @@ const findProjeto = async (objectId) => {
 // findCategoria('5a693d6343342e137d81a429').then(obj => findCategoria(obj._id))
 // findCategorias({nome: 'Projeto Benefício'}, { page: 1, limit: 1 })
 const newProject = {
-    nome: 'RMIAutorizador2',
-    versaoAtual: '0010101',
-    categoria: '5a6ab624f8ac801dda94a6d4',
+    nome: 'UnikAcid',
+    versaoAtual: '1.0.0',
+    categoria: '5a693d6343342e137d81a429',
 }
+
+const addDependenciaRequest = {
+    id: '5a694db7d508a51704b2988e',
+    dependencia: {
+        id: '5a6fd4c60852934e6033800a',
+        versao: '1.0.0',
+    },
+}
+//addDependencia(addDependenciaRequest)
 findProjeto('5a694db7d508a51704b2988e')

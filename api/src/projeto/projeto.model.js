@@ -8,14 +8,13 @@ const ProjetoSchema = new Schema({
     versoes: [String],
     categoria: { type: Schema.ObjectId, ref: 'Categoria', required: true },
     dependencias: [{
+        _id: false,
         projeto: { type: Schema.ObjectId, ref: 'Projeto' },
         versao: String,
     }],
-    isPublicado: { type: Boolean, default: false },
+    isDependencia: { type: Boolean, default: true },
 })
 
 const ProjetoModel = mongoose.model('Projeto', ProjetoSchema)
-
 ProjetoSchema.plugin(idValidator, { message: '{PATH} não localizado' })
-
 module.exports = ProjetoModel
