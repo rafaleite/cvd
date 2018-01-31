@@ -1,5 +1,7 @@
 const Projeto = require('./projeto.model')
+const categoriaBusiness = require('../categoria/categoria.business')
 const mongoose = require('mongoose')
+const ERRORS = require('../constants').ERRORS
 
 const montarDependenciasDTO = dependencias => dependencias.map(dep => ({ nome: dep.projeto.nome, versao: dep.versao }))
 
@@ -41,24 +43,30 @@ const findProjeto = async (query) => {
     }
 }
 
-const newProjeto = async (projeto) => {
+const create = async (projeto) => {
     try {
-        const categoria = await findCategoria(projeto.categoria)
+        const categoria = categoriaBusiness.findCategoriaById(projeto.categoria)
         if (categoria === null) {
-            console.log('Categoria não localizada')
-            return ''
+            const error = new Error(ERRORS.CATEGORIA_NAO_LOCALIZADA)
+            error.code = 400
+            throw error
         }
         const novoProjeto = new Projeto(projeto)
         novoProjeto.versoes.push(novoProjeto.versaoAtual)
         novoProjeto.categoria = categoria
 
-        const objetoSalvo = await novoProjeto.save()
-        console.log(objetoSalvo)
+        return await novoProjeto.save()
     } catch (err) {
-        console.log(err)
         throw err
     }
 }
 
+const update = async (projeto) => {
+
+}
+
+const remove = async (id) => {
+
+}
 
 module.exports = { montarProjetoDTO, findProjetoById, findProjeto }

@@ -39,4 +39,5 @@ const findCategorias = async (query, isDTOFormat) => {
     }
 }
 
+
 module.exports = { montarCategoriaDTO, findCategoriaById, findCategorias }
