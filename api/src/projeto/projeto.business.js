@@ -43,18 +43,21 @@ const findProjeto = async (query) => {
     }
 }
 
+const validaCategoria = async (idCategoria) => {
+    const categoria = categoriaBusiness.findCategoriaById(idCategoria)
+    if (categoria === null) {
+        const error = new Error(ERRORS.CATEGORIA_NAO_LOCALIZADA)
+        error.code = 400
+        throw error
+    }
+}
+
 const create = async (projeto) => {
     try {
-        const categoria = categoriaBusiness.findCategoriaById(projeto.categoria)
-        if (categoria === null) {
-            const error = new Error(ERRORS.CATEGORIA_NAO_LOCALIZADA)
-            error.code = 400
-            throw error
-        }
+        await validaCategoria(projeto.categoria)
         const novoProjeto = new Projeto(projeto)
         novoProjeto.versoes.push(novoProjeto.versaoAtual)
-        novoProjeto.categoria = categoria
-
+        novoProjeto.categoria = projeto.categoria
         return await novoProjeto.save()
     } catch (err) {
         throw err
@@ -69,4 +72,19 @@ const remove = async (id) => {
 
 }
 
-module.exports = { montarProjetoDTO, findProjetoById, findProjeto }
+const addVersao = async (data) => {
+
+}
+
+const addDependencia = async (data) => {
+    
+}
+
+module.exports = {
+    montarProjetoDTO,
+    create,
+    update,
+    remove,
+    findProjetoById,
+    findProjeto,
+}
