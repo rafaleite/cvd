@@ -64,26 +64,35 @@ const create = async (projeto) => {
     }
 }
 
-const update = async (projeto) => {
+const edit = async (id, projeto) => {
+    const _id = new mongoose.mongo.ObjectID(id)
 
+    const projetoExist = await Projeto.findOne({ nome: projeto.nome, _id: { $ne: _id } })
+    if (projetoExist !== null) {
+        return { error: ERRORS.PROJETO_MESMO_NOME, status: 422 }
+    }
+
+    await Projeto.findOneAndUpdate({ _id }, projeto)
+    return { msg: 'Categoria alterada com sucesso', status: 200 }
 }
 
 const remove = async (id) => {
-
-}
-
-const addVersao = async (data) => {
-
-}
-
-const addDependencia = async (data) => {
-    
+    try {
+        const busca = await Projeto.find({ 'dependencias.projeto': mongoose.Types.ObjectId(id) })
+        if (busca !== null) {
+            return { error: ERRORS.PROJETO_DEPENDENCIA, status: 400 }
+        }
+        await Projeto.findOneAndRemove({ _id: mongoose.Types.ObjectId(id) })
+        return { msg: 'Categoria apagada com sucesso!', status: 200 }
+    } catch (err) {
+        throw err
+    }
 }
 
 module.exports = {
     montarProjetoDTO,
     create,
-    update,
+    edit,
     remove,
     findProjetoById,
     findProjeto,
