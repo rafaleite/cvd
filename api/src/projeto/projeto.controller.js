@@ -9,7 +9,7 @@ const ERRORS = require('../constants').ERRORS
  * getCategorias  - Retorna JSON com todas as categorias
  * @returns {Array} - Array of users
  */
-exports.getCategorias = async (ctx, next) => {
+exports.getProejetos = async (ctx, next) => {
     try {
         const categorias = await Categoria.find({})
         const categoriasDTO = categorias.map(cat => montaCategoriaDTO(cat))

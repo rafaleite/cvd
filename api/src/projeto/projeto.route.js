@@ -1,13 +1,12 @@
 const Router = require('koa-router')
-const querystring = require('query-string')
+const controller = require('./projeto.controller')
 
-const router = new Router({ prefix: '/projetos' })
+const router = new Router()
 
-router.get('/', async (ctx, next) => {
-    ctx.status = 200
-    ctx.body = { nome: 'Teste de rota' }
-    console.log(querystring.parse(ctx.request.querystring))
-    await next()
-})
+router.get('projetos/', controller.getProjetos)
+router.get('projeto/:id', controller.getProjeto)
+router.post('projeto/', controller.create)
+router.put('projeto/:id', controller.edit)
+router.delete('projeto/:id', controller.remove)
 
 module.exports = router
