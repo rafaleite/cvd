@@ -72,8 +72,8 @@ const edit = async (id, projeto) => {
         return { error: ERRORS.PROJETO_MESMO_NOME, status: 422 }
     }
 
-    await Projeto.findOneAndUpdate({ _id }, projeto)
-    return { msg: 'Categoria alterada com sucesso', status: 200 }
+    const projetoEdit = await Projeto.findOneAndUpdate({ _id }, projeto)
+    return projetoEdit
 }
 
 const remove = async (id) => {
