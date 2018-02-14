@@ -2,15 +2,30 @@ const projetoBusiness = require('./projeto.business')
 
 
 /**
- * getProejetos  - Retorna JSON com todas as categorias
- * @returns {Array} - Array of users
+ * find  - Retorna JSON com todas os projetos
+ * @returns {Array} - Array de projetos
  */
-exports.getProejetos = async (ctx, next) => {
+exports.find = async (ctx, next) => {
     try {
-        const projetos = await projetoBusiness.findProjeto({})
+        const projetos = await projetoBusiness.find({})
         const dtos = projetos.map(obj => projetoBusiness.montarProjetoDTO(obj))
         ctx.status = 200
         ctx.body = { projetos: dtos }
+        await next()
+    } catch (err) {
+        ctx.throw(500, err)
+    }
+}
+
+/**
+ * findById  - Retorna JSON para um Projeto especifico
+ * @returns {Object}  - Projeto
+ */
+exports.findById = async (ctx, next) => {
+    try {
+        const projeto = await projetoBusiness.findById(ctx.params.id, true)
+        ctx.body = projetoBusiness.montarProjetoDTO(projeto)
+        ctx.status = 200
         await next()
     } catch (err) {
         ctx.throw(500, err)
@@ -37,7 +52,7 @@ exports.getProejetos = async (ctx, next) => {
  */
 exports.create = async (ctx, next) => {
     try {
-        const projeto = await projetoBusiness.create(ctx.request.body.nome)
+        const projeto = await projetoBusiness.create(ctx.request.body)
         ctx.status = 200
         ctx.body = projetoBusiness.montarProjetoDTO(projeto)
         await next()

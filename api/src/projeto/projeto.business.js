@@ -23,7 +23,7 @@ const montarProjetoDTO = (projeto) => {
     return dto
 }
 
-const findProjetoById = async (id) => {
+const findById = async (id) => {
     try {
         const _id = new mongoose.mongo.ObjectID(id)
         return await Projeto.findById(_id).populate('categoria').populate('dependencias.projeto')
@@ -33,7 +33,7 @@ const findProjetoById = async (id) => {
     }
 }
 
-const findProjeto = async (query) => {
+const find = async (query) => {
     try {
         const projetos = await Projeto.find(query).populate('categoria').populate('dependencias.projeto')
         return projetos
@@ -44,7 +44,7 @@ const findProjeto = async (query) => {
 }
 
 const validaCategoria = async (idCategoria) => {
-    const categoria = categoriaBusiness.findCategoriaById(idCategoria)
+    const categoria = await categoriaBusiness.findCategoriaById(idCategoria)
     if (categoria === null) {
         const error = new Error(ERRORS.CATEGORIA_NAO_LOCALIZADA)
         error.code = 400
@@ -94,6 +94,6 @@ module.exports = {
     create,
     edit,
     remove,
-    findProjetoById,
-    findProjeto,
+    findById,
+    find,
 }
